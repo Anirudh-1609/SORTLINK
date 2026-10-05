@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>SORTLINK Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <!-- ================================================= -->
+    <!-- HEADER -->
+    <!-- ================================================= -->
+
+    <header class="topbar">
+
+        <div>
+
+            <div class="brand">
+                SORTLINK
+            </div>
+
+            <div class="subtitle">
+                Smart Last-Mile Freight Hub
+            </div>
+
+        </div>
+
+        <div class="system-status">
+
+            <span class="status-dot"></span>
+
+            System Online
+
+        </div>
+
+    </header>
+
+
+    <!-- ================================================= -->
+    <!-- MAIN -->
+    <!-- ================================================= -->
+
+    <main class="dashboard">
+
+        <!-- ============================================= -->
+        <!-- INPUT SECTION -->
+        <!-- ============================================= -->
+
+        <section class="panel">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>Optimization Input</h2>
+
+                    <p>
+                        Enter parcel and vehicle information
+                        for dynamic capacity-aware allocation.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- ========================================= -->
+            <!-- PARCELS -->
+            <!-- ========================================= -->
+
+            <div class="input-group">
+
+                <div class="group-title">
+
+                    <h3>Parcels</h3>
+
+                    <button
+                        type="button"
+                        class="secondary-button"
+                        id="addParcelBtn"
+                    >
+                        + Add Parcel
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="parcelContainer"
+                    class="dynamic-container"
+                ></div>
+
+            </div>
+
+
+            <!-- ========================================= -->
+            <!-- VEHICLES -->
+            <!-- ========================================= -->
+
+            <div class="input-group">
+
+                <div class="group-title">
+
+                    <h3>Vehicles</h3>
+
+                    <button
+                        type="button"
+                        class="secondary-button"
+                        id="addVehicleBtn"
+                    >
+                        + Add Vehicle
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="vehicleContainer"
+                    class="dynamic-container"
+                ></div>
+
+            </div>
+
+
+            <!-- ========================================= -->
+            <!-- ACTION -->
+            <!-- ========================================= -->
+
+            <div class="action-row">
+
+                <button
+                    type="button"
+                    class="primary-button"
+                    id="optimizeBtn"
+                >
+                    Run Optimization
+                </button>
+
+                <button
+                    type="button"
+                    class="clear-button"
+                    id="clearBtn"
+                >
+                    Clear
+                </button>
+
+            </div>
+
+
+            <div
+                id="message"
+                class="message hidden"
+            ></div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- SUMMARY -->
+        <!-- ================================================= -->
+
+        <section
+            id="summarySection"
+            class="panel hidden"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>Optimization Summary</h2>
+
+                    <p>
+                        Capacity-aware vehicle allocation
+                        generated from the submitted data.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-grid">
+
+                <div class="metric-card">
+
+                    <span class="metric-label">
+                        Parcels
+                    </span>
+
+                    <strong id="totalParcels">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="metric-card">
+
+                    <span class="metric-label">
+                        Vehicles
+                    </span>
+
+                    <strong id="totalVehicles">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="metric-card">
+
+                    <span class="metric-label">
+                        Active Vehicles
+                    </span>
+
+                    <strong id="activeVehicles">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="metric-card">
+
+                    <span class="metric-label">
+                        Utilization
+                    </span>
+
+                    <strong id="overallUtilization">
+                        0%
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- ALLOCATION -->
+        <!-- ================================================= -->
+
+        <section
+            id="allocationSection"
+            class="panel hidden"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>Vehicle Allocation</h2>
+
+                    <p>
+                        Optimized parcel assignment by vehicle.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Vehicle</th>
+                            <th>Zone</th>
+                            <th>Capacity</th>
+                            <th>Load</th>
+                            <th>Remaining</th>
+                            <th>Utilization</th>
+                            <th>Status</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="vehicleResults"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- PARCEL ASSIGNMENTS -->
+        <!-- ================================================= -->
+
+        <section
+            id="assignmentSection"
+            class="panel hidden"
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>Parcel Assignments</h2>
+
+                    <p>
+                        Final destination-to-vehicle mapping.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Parcel</th>
+                            <th>Weight</th>
+                            <th>Zone</th>
+                            <th>Assigned Vehicle</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="assignmentResults"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- KPI -->
+        <!-- ================================================= -->
+
+
+
+    </main>
+
+</div>
+
+
+<script
+    src="{{ url_for('static', filename='script.js') }}"
+></script>
+
+</body>
+
+</html>
